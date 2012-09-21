@@ -13,6 +13,8 @@ namespace MurrayGrant.KeyboardJoke
         private UserInterface _UI;
         private KeyboardInput _KeyboardInput;
         private KeyboardOutput _KeyboardOutput;
+        private FiddleConfig _FiddleConfig;
+        private bool _DebuggerOnUsb;
 
         #region Init
         public void Run(Configuration cfg)
@@ -22,9 +24,9 @@ namespace MurrayGrant.KeyboardJoke
 
             // Determine if the USB debugger is available.
             var debugInterface = GHIElectronics.NETMF.Hardware.Configuration.DebugInterface.GetCurrent();
-            var debuggerOnUsb = (debugInterface == GHIElectronics.NETMF.Hardware.Configuration.DebugInterface.Port.USB1);
+            _DebuggerOnUsb = (debugInterface == GHIElectronics.NETMF.Hardware.Configuration.DebugInterface.Port.USB1);
 
-            if (debuggerOnUsb)
+            if (_DebuggerOnUsb)
                 Debug.EnableGCMessages(true);
 
             // Lcd / UI.
@@ -41,21 +43,22 @@ namespace MurrayGrant.KeyboardJoke
             try
             {
                 // More high level UI.
-                this._UI = new UserInterface(lcd, debuggerOnUsb);
+                this._UI = new UserInterface(lcd, _DebuggerOnUsb);
                 this._UI.Start();
                 if (lcd != null) lcd.SetCursorPosition(0, 3);
 
                 // Heatbeat LED.
                 this._HeartBeat = new LedBlinker(cfg.LedPin);
-                if (debuggerOnUsb)
+                if (_DebuggerOnUsb)
                     this._HeartBeat.Start();
 
                 // Start up the keyboard client.
                 _KeyboardOutput = new KeyboardOutput();
-                if (!debuggerOnUsb)
+                if (!_DebuggerOnUsb)
                     _KeyboardOutput.Start();
 
                 // Monitor USB host devices being added to detect a keyboard.
+                _FiddleConfig = cfg.FiddleConfig;
                 USBHostController.DeviceConnectedEvent += new USBH_DeviceConnectionEventHandler(USBHostController_DeviceConnectedEvent);
 
                 var initEnd = Utility.GetMachineTime();
@@ -72,7 +75,7 @@ namespace MurrayGrant.KeyboardJoke
         {
             if (device.TYPE == USBH_DeviceType.Keyboard)
             {
-                _KeyboardInput = new KeyboardInput(_UI, _KeyboardOutput);
+                _KeyboardInput = new KeyboardInput(_UI, _KeyboardOutput, _FiddleConfig, _DebuggerOnUsb);
                 _KeyboardInput.BeginMonitorInputFrom(device);
             }
         }

@@ -36,6 +36,15 @@ namespace MurrayGrant.KeyboardJoke.Services
             _Queue.Enqueue(QueuedEvent.CreateKeyDown((byte)key));
             ActionEvent();
         }
+        public void KeyPress(GHIElectronics.NETMF.USBClient.USBC_Key key)
+        {
+            _Queue.Enqueue(QueuedEvent.CreateKeyPress((byte)key));
+            ActionEvent();
+        }
+        public void KeyPressWithModifier(short keyAndModifier)
+        {
+            throw new NotImplementedException();
+        }
 
         private void TimerTick(object arg)
         {
@@ -66,7 +75,6 @@ namespace MurrayGrant.KeyboardJoke.Services
                 // Key up event: pass to output and dequeue next item.
                 var key = e.GetKeyPressedAsClient();
                 _KeyboardOut.KeyUp(key);
-                _UI.LastKeyPressed = (GHIElectronics.NETMF.USBHost.USBH_Key)key;
                 ActionEvent();
             }
             else if (type == EventType.KeyDown)
@@ -82,7 +90,6 @@ namespace MurrayGrant.KeyboardJoke.Services
                 var key = e.GetKeyPressedAsClient();
                 _KeyboardOut.KeyDown(key);
                 _KeyboardOut.KeyUp(key);
-                _UI.LastKeyPressed = (GHIElectronics.NETMF.USBHost.USBH_Key)key;
                 _UI.KeystrokesReceived = _UI.KeystrokesReceived + 1;
                 ActionEvent();
             }
