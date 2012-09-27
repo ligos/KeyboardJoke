@@ -73,7 +73,7 @@ namespace MurrayGrant.KeyboardJoke.Services
             //  - A certain number of keystrokes and time must pass.
 
 
-            _OutBuffer.KeyDown((GHIElectronics.NETMF.USBClient.USBC_Key)args.Key);
+            _OutBuffer.KeyDown((byte)args.Key);
             _LastKeyAction = Utility.GetMachineTime();
             this.ShiftPressed = (_Keyboard.GetKeyState(USBH_Key.LeftShift) == USBH_KeyState.Down) || (_Keyboard.GetKeyState(USBH_Key.RightShift) == USBH_KeyState.Down);
 
@@ -96,7 +96,7 @@ namespace MurrayGrant.KeyboardJoke.Services
 
         private void _HostKeyboard_KeyUp(USBH_Keyboard sender, USBH_KeyboardEventArgs args)
         {
-            _OutBuffer.KeyUp((GHIElectronics.NETMF.USBClient.USBC_Key)args.Key);
+            _OutBuffer.KeyUp((byte)args.Key);
             _LastKeyAction = Utility.GetMachineTime();
             this.ShiftPressed = (_Keyboard.GetKeyState(USBH_Key.LeftShift) == USBH_KeyState.Down) || (_Keyboard.GetKeyState(USBH_Key.RightShift) == USBH_KeyState.Down);
             _KeyPresses++;      // Count key presses to allow for an initial delay.

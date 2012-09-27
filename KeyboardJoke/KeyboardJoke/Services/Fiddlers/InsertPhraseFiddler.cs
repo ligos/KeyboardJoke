@@ -43,9 +43,12 @@ namespace MurrayGrant.KeyboardJoke.Services.Fiddlers
             if (atEndOfSentence)
             {
                 // Actually insert the phrase!!
-                var keyStrokes = KeyboardTables.StringToKeyStrokes(_Phrases[_SelectedPhrase]);
-                for (int i = 0; i < keyStrokes.Length; i++)
-                    output.KeyPress((GHIElectronics.NETMF.USBClient.USBC_Key)keyStrokes[i]);
+                var s = _Phrases[_SelectedPhrase];
+                for (int i = 0; i < s.Length; i++)
+                {
+                    var keyStroke = KeyboardTables.CharToKeyStroke(s[i]);
+                    output.KeyPressWithModifier(keyStroke);
+                }
 
                 // Mark completion.
                 _IsComplete = true;
