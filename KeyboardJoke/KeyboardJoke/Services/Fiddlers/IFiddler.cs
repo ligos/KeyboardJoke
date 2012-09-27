@@ -8,24 +8,24 @@ namespace MurrayGrant.KeyboardJoke.Services.Fiddlers
         /// <summary>
         /// Called when the KeyboardInput class is constructed.
         /// </summary>
-        void Initialise(Random randomGenerator);
+        void Initialise();
 
         /// <summary>
         /// Called when this fiddler is published.
         /// </summary>
-        void OnPublish();
+        void OnPublish(Random randomGenerator);
 
         /// <summary>
         /// Called to apply a fiddle to the output stream.
         /// Note that this may not actually add anything to the output.
         /// </summary>
-        void ApplyOnKeyDown(DelayBuffer output, byte thisKeyPress);
+        void ApplyOnKeyDown(DelayBuffer output, byte thisKeyPress, bool isShifted);
 
         /// <summary>
         /// Called to apply a fiddle to the output stream.
         /// Note that this may not actually add anything to the output.
         /// </summary>
-        void ApplyOnKeyUp(DelayBuffer output, byte thisKeyPress);
+        void ApplyOnKeyUp(DelayBuffer output, byte thisKeyPress, bool isShifted);
 
         /// <summary>
         /// Set true when the fiddle has been applied (as some fiddles may need to be interspursed between keystrokes).

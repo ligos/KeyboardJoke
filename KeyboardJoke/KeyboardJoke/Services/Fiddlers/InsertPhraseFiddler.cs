@@ -9,36 +9,36 @@ namespace MurrayGrant.KeyboardJoke.Services.Fiddlers
     {
         private readonly string[] _Phrases;
         private int _SelectedPhrase;
-        private Random _Rand;
         private bool _IsComplete;
-        private byte _LastKeyPress;
+        private char _LastLetterPressed;
         
         public InsertPhraseFiddler(string[] phrases)
         {
             _Phrases = phrases;
         }
-        public void Initialise(Random randomGenerator)
+        public void Initialise()
         {
-            _Rand = randomGenerator;
+            // No-op.
         }
 
 
-        public void OnPublish()
+        public void OnPublish(Random randomGenerator)
         {
             // Choose a phrase.
-            _SelectedPhrase = _Rand.Next(_Phrases.Length - 1);
+            _SelectedPhrase = randomGenerator.Next(_Phrases.Length - 1);
             _IsComplete = false;
         }
 
-        public void ApplyOnKeyDown(DelayBuffer output, byte thisKeyPress)
+        public void ApplyOnKeyDown(DelayBuffer output, byte thisKeyPress, bool isShifted)
         {
             // No-op.                                        
         }
 
-        public void ApplyOnKeyUp(DelayBuffer output, byte thisKeyPress)
+        public void ApplyOnKeyUp(DelayBuffer output, byte thisKeyPress, bool isShifted)
         {
-            // TODO: ensure the phrase is inserted at the end of a sentence or paragraph.
-            bool atEndOfSentence = true;
+            // Ensure the phrase is inserted at the end of a sentence or paragraph.
+            bool atEndOfSentence = (thisKeyPress == (byte)GHIElectronics.NETMF.USBClient.USBC_Key.Space) 
+                && Array.IndexOf(KeyboardTables.EndOfSentenceCharacters, _LastLetterPressed) != -1;
 
             if (atEndOfSentence)
             {
@@ -52,11 +52,11 @@ namespace MurrayGrant.KeyboardJoke.Services.Fiddlers
             }
             else
             {
-                // Simply capture the last keypress.
-                _LastKeyPress = thisKeyPress;    
+                // Capture the last keypress as a character.
+                var c = KeyboardTables.KeyToChar((byte)thisKeyPress, isShifted);
+                if (c != (char)0)
+                    _LastLetterPressed = c;    
             }
-
-            
         }
 
         public bool IsComplete
@@ -66,8 +66,8 @@ namespace MurrayGrant.KeyboardJoke.Services.Fiddlers
 
         public void AfterCompletion()
         {
-            // Clear the last keypress.
-            _LastKeyPress = 0;
+            // Clear the last letter pressed.
+            _LastLetterPressed = (char)0;
         }
     }
 }

@@ -22,6 +22,8 @@ namespace MurrayGrant.KeyboardJoke.Services
         private TimeSpan _LastKeyAction;                // Set to GetMachineTime() each key press to detect inactivity.
         private int _KeyPresses;
 
+        public bool ShiftPressed { get; private set; }
+
         public KeyboardInput(UserInterface ui, KeyboardOutput output, FiddleConfig config, bool inDebugMode)
         {
             _Ui = ui;
@@ -29,8 +31,6 @@ namespace MurrayGrant.KeyboardJoke.Services
             _Config = config;
             _NextFiddleEvents = new Timer(this.FiddleHandler, null, Timeout.Infinite, Timeout.Infinite);
             _Rand = new Random((int)(Utility.GetMachineTime().Ticks & 0x00000000ffffffff));
-            foreach (var def in config.Definitions)
-                def.Implementation.Initialise(_Rand);
             _InDebugMode = inDebugMode;
 
         }
@@ -75,11 +75,12 @@ namespace MurrayGrant.KeyboardJoke.Services
 
             _OutBuffer.KeyDown((GHIElectronics.NETMF.USBClient.USBC_Key)args.Key);
             _LastKeyAction = Utility.GetMachineTime();
+            this.ShiftPressed = (_Keyboard.GetKeyState(USBH_Key.LeftShift) == USBH_KeyState.Down) || (_Keyboard.GetKeyState(USBH_Key.RightShift) == USBH_KeyState.Down);
 
             if (_PublishedFiddle != null)
             {
                 // Call fiddler to adjust our output.
-                _PublishedFiddle.Implementation.ApplyOnKeyDown(_OutBuffer, (byte)args.Key);
+                _PublishedFiddle.Implementation.ApplyOnKeyDown(_OutBuffer, (byte)args.Key, this.ShiftPressed);
                 if (_PublishedFiddle.Implementation.IsComplete)
                 {
                     // Fiddle was applied, schedule the next one.
@@ -97,12 +98,13 @@ namespace MurrayGrant.KeyboardJoke.Services
         {
             _OutBuffer.KeyUp((GHIElectronics.NETMF.USBClient.USBC_Key)args.Key);
             _LastKeyAction = Utility.GetMachineTime();
+            this.ShiftPressed = (_Keyboard.GetKeyState(USBH_Key.LeftShift) == USBH_KeyState.Down) || (_Keyboard.GetKeyState(USBH_Key.RightShift) == USBH_KeyState.Down);
             _KeyPresses++;      // Count key presses to allow for an initial delay.
-
+            
             if (_PublishedFiddle != null)
             {
                 // Call fiddler to adjust our output.
-                _PublishedFiddle.Implementation.ApplyOnKeyUp(_OutBuffer, (byte)args.Key);
+                _PublishedFiddle.Implementation.ApplyOnKeyUp(_OutBuffer, (byte)args.Key, this.ShiftPressed);
                 if (_PublishedFiddle.Implementation.IsComplete)
                 {
                     // Fiddle was applied, schedule the next one.
@@ -122,7 +124,7 @@ namespace MurrayGrant.KeyboardJoke.Services
                 return;
 
             // It's now time to publish the chosen fiddle.
-            _SelectedFiddle.Implementation.OnPublish();
+            _SelectedFiddle.Implementation.OnPublish(_Rand);
             _PublishedFiddle = _SelectedFiddle;
             _SelectedFiddle = null;
             _NextFiddleEvents.Change(Timeout.Infinite, Timeout.Infinite);

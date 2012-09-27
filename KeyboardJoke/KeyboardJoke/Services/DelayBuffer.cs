@@ -43,7 +43,16 @@ namespace MurrayGrant.KeyboardJoke.Services
         }
         public void KeyPressWithModifier(short keyAndModifier)
         {
-            throw new NotImplementedException();
+            if ((keyAndModifier & KeyboardTables.InvalidFlag) > 0)
+                // This key is marked as invalid: ignore it.
+                return;
+
+            // TODO: other modifiers.
+            if ((keyAndModifier & KeyboardTables.ShiftModifier) > 0)
+                _Queue.Enqueue(QueuedEvent.CreateKeyDown((byte)GHIElectronics.NETMF.USBClient.USBC_Key.LeftShift));
+            _Queue.Enqueue((byte)(keyAndModifier & 0x00ff));
+            if ((keyAndModifier & KeyboardTables.ShiftModifier) > 0)
+                _Queue.Enqueue(QueuedEvent.CreateKeyUp((byte)GHIElectronics.NETMF.USBClient.USBC_Key.LeftShift));
         }
 
         private void TimerTick(object arg)

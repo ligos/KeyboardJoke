@@ -30,7 +30,7 @@ namespace MurrayGrant.KeyboardJoke
                 cfg.FiddleConfig.Definitions[0] = new FiddleDefinition();
                 cfg.FiddleConfig.Definitions[0].Implementation = new Services.Fiddlers.InsertPhraseFiddler(phrases);
                 cfg.FiddleConfig.Definitions[0].Probability = Int32.MaxValue;          // Probabilities should scale from 0 to Int32.MaxValue-1 and be sorted accordingly.
-                cfg.FiddleConfig.Definitions[0].MinDelay = new TimeSpan(TimeSpan.TicksPerMinute * 1);
+                cfg.FiddleConfig.Definitions[0].MinDelay = new TimeSpan(TimeSpan.TicksPerMinute * 2);
                 cfg.FiddleConfig.Definitions[0].MaxDelay = new TimeSpan(TimeSpan.TicksPerMinute * 5);
 
                 var world = new World();
