@@ -19,12 +19,12 @@ namespace MurrayGrant.KeyboardJoke.Services
     {
         public enum Keys
         {
-            Up,
-            Down,
-            Right,
-            Left,
-            Select,
-            None,
+            None = 0,
+            Up = 1,
+            Down = 2,
+            Right = 3,
+            Left = 4,
+            Select = 5,
         }
 
         private OutputPort LCD_RS;      // 4 bytes

@@ -21,11 +21,13 @@ namespace MurrayGrant.KeyboardJoke.Services
         private int _FiddlesMade = 0;
         private bool _FiddleScheduled = false;
         private TinyTimeSpan _KeyEchoDelay = TinyTimeSpan.Zero;
+        private bool _LcdBacklightOn;
         private TimeSpan _TurnOffBacklightAfter = TimeSpan.Zero;
 
         public int KeystrokesReceived { get { return _KeystrokesReceived; } set { _KeystrokesReceived = value; _RequiresUpdate = true; } }
         public int FiddlesMade { get { return _FiddlesMade; } set { _FiddlesMade = value; _RequiresUpdate = true; } }
         public bool FiddleScheduled { get { return _FiddleScheduled; } set { _FiddleScheduled = value; _RequiresUpdate = true; } }
+        public bool LcdBacklightOn { get { return _LcdBacklightOn; } set { _LcdBacklightOn = value; _RequiresUpdate = true; } }
 
         public UserInterface(LcdAndKeypad lcd, bool debuggerRunning)
         {
@@ -43,12 +45,15 @@ namespace MurrayGrant.KeyboardJoke.Services
 
             // Init the LCD with permanent text.
             _Lcd.Clear();
+            _LcdBacklightOn = false;
+            _Lcd.ShutBacklightOff();
             _Lcd.CursorHome();
             _Lcd.Print("Keyboard Joke");
             
             if (_DebuggerRunning)
             {
                 // Backlight stays on permanently when debugger attached.
+                _LcdBacklightOn = true;
                 _Lcd.TurnBacklightOn();
                 _TurnOffBacklightAfter = TimeSpan.MaxValue;
 
@@ -75,23 +80,31 @@ namespace MurrayGrant.KeyboardJoke.Services
         private void PollButtonPresses(object obj)
         {
             _PollCount++;
-            
+            var now = Utility.GetMachineTime();
+
             // Check the LCD button state.
             var key = _Lcd.GetKey();
-            if ((int)key > 0)
+            if (!_DebuggerRunning && key != LcdAndKeypad.Keys.None)
             {
                 // If anything was pressed, turn the backlight on for a while.
                 _RequiresUpdate = true;
-                _TurnOffBacklightAfter = Utility.GetMachineTime().Add(BacklightDuration);        
+                _TurnOffBacklightAfter = now.Add(BacklightDuration);
             }
 
             // This is also the hook into re-drawing the UI.
             if (_PollCount % PollsPerRefresh == 0)
             {
+                // Backlight status.
+                var newBacklightState = (now < _TurnOffBacklightAfter);
+                if (newBacklightState != LcdBacklightOn)
+                    LcdBacklightOn = newBacklightState;
+
+                // UI redraw.
                 _PollCount = 0;
                 RedrawUi(obj);
             }
         }
+
         private void RedrawUi(object obj)
         {
             // If an exception has happened, don't display anything more.
@@ -104,12 +117,13 @@ namespace MurrayGrant.KeyboardJoke.Services
                 // Keyboard Joke DF     // Does not change; set in Start(). D = debugger available (keys are not echoed), X = fiiddle scheduled
                 // 12345678  123456     // Count of keystrokes received, delay between receive and echo.
 
+
                 // No updates: return quickly.
                 if (!_RequiresUpdate)
                     return;
 
                 // Backlight status.
-                _Lcd.SetBacklightState(Utility.GetMachineTime() < _TurnOffBacklightAfter);
+                _Lcd.SetBacklightState(LcdBacklightOn);
 
                 // Keystrokes received.
                 _Lcd.SetCursorPosition(1, 0);
