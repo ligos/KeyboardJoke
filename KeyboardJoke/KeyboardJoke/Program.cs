@@ -35,17 +35,19 @@ namespace MurrayGrant.KeyboardJoke
                 //cfg.FiddleConfig.Definitions[i].MaxDelay = new TimeSpan(TimeSpan.TicksPerMinute * 5);
                 //i++;
 
-                cfg.FiddleConfig.Definitions[i] = new FiddleDefinition();
-                cfg.FiddleConfig.Definitions[i].Implementation = new Services.Fiddlers.DuplicateKeyFiddler();
-                cfg.FiddleConfig.Definitions[i].Probability = Int32.MaxValue;          // Probabilities should scale from 0 to Int32.MaxValue-1 and be sorted accordingly.
-                cfg.FiddleConfig.Definitions[i].MinDelay = new TimeSpan(TimeSpan.TicksPerMinute * 1);
-                cfg.FiddleConfig.Definitions[i].MaxDelay = new TimeSpan(TimeSpan.TicksPerMinute * 2);
-
                 //cfg.FiddleConfig.Definitions[i] = new FiddleDefinition();
-                //cfg.FiddleConfig.Definitions[i].Implementation = new Services.Fiddlers.DeleteKeyFiddler();
+                //cfg.FiddleConfig.Definitions[i].Implementation = new Services.Fiddlers.DuplicateKeyFiddler();
                 //cfg.FiddleConfig.Definitions[i].Probability = Int32.MaxValue;          // Probabilities should scale from 0 to Int32.MaxValue-1 and be sorted accordingly.
                 //cfg.FiddleConfig.Definitions[i].MinDelay = new TimeSpan(TimeSpan.TicksPerMinute * 1);
                 //cfg.FiddleConfig.Definitions[i].MaxDelay = new TimeSpan(TimeSpan.TicksPerMinute * 2);
+                //i++;
+
+                cfg.FiddleConfig.Definitions[i] = new FiddleDefinition();
+                cfg.FiddleConfig.Definitions[i].Implementation = new Services.Fiddlers.DeleteKeyFiddler();
+                cfg.FiddleConfig.Definitions[i].Probability = Int32.MaxValue;          // Probabilities should scale from 0 to Int32.MaxValue-1 and be sorted accordingly.
+                cfg.FiddleConfig.Definitions[i].MinDelay = new TimeSpan(TimeSpan.TicksPerMinute * 1);
+                cfg.FiddleConfig.Definitions[i].MaxDelay = new TimeSpan(TimeSpan.TicksPerMinute * 2);
+                i++;
 
                 var world = new World();
                 world.Run(cfg);

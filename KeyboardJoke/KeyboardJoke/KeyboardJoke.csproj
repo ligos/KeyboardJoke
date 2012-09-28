@@ -41,6 +41,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Services\ExceptionService.cs" />
+    <Compile Include="Services\Fiddlers\DeleteKeyFiddler.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Services\Fiddlers\DuplicateKeyFiddler.cs" />
     <Compile Include="Services\Fiddlers\IFiddler.cs" />
     <Compile Include="Services\Fiddlers\InsertPhraseFiddler.cs" />
