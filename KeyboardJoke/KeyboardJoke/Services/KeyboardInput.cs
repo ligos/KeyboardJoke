@@ -3,6 +3,7 @@ using System.Threading;
 using Microsoft.SPOT;
 using Microsoft.SPOT.Hardware;
 using GHIElectronics.NETMF.USBHost;
+using MurrayGrant.KeyboardJoke.Entities;
 
 namespace MurrayGrant.KeyboardJoke.Services
 {
@@ -72,15 +73,15 @@ namespace MurrayGrant.KeyboardJoke.Services
             // Must have an inital delay period before anything happens so logins can happen OK.
             //  - A certain number of keystrokes and time must pass.
 
-
-            _OutBuffer.KeyDown((byte)args.Key);
+            var key = (KeyboardKey)args.Key;
+            _OutBuffer.KeyDown(key);
             _LastKeyAction = Utility.GetMachineTime();
             this.ShiftPressed = (_Keyboard.GetKeyState(USBH_Key.LeftShift) == USBH_KeyState.Down) || (_Keyboard.GetKeyState(USBH_Key.RightShift) == USBH_KeyState.Down);
 
             if (_PublishedFiddle != null)
             {
                 // Call fiddler to adjust our output.
-                _PublishedFiddle.Implementation.ApplyOnKeyDown(_OutBuffer, (byte)args.Key, this.ShiftPressed);
+                _PublishedFiddle.Implementation.ApplyOnKeyDown(_OutBuffer, key, this.ShiftPressed);
                 if (_PublishedFiddle.Implementation.IsComplete)
                 {
                     // Fiddle was applied, schedule the next one.
@@ -96,7 +97,8 @@ namespace MurrayGrant.KeyboardJoke.Services
 
         private void _HostKeyboard_KeyUp(USBH_Keyboard sender, USBH_KeyboardEventArgs args)
         {
-            _OutBuffer.KeyUp((byte)args.Key);
+            var key = (KeyboardKey)args.Key;
+            _OutBuffer.KeyUp(key);
             _LastKeyAction = Utility.GetMachineTime();
             this.ShiftPressed = (_Keyboard.GetKeyState(USBH_Key.LeftShift) == USBH_KeyState.Down) || (_Keyboard.GetKeyState(USBH_Key.RightShift) == USBH_KeyState.Down);
             _KeyPresses++;      // Count key presses to allow for an initial delay.
@@ -104,7 +106,7 @@ namespace MurrayGrant.KeyboardJoke.Services
             if (_PublishedFiddle != null)
             {
                 // Call fiddler to adjust our output.
-                _PublishedFiddle.Implementation.ApplyOnKeyUp(_OutBuffer, (byte)args.Key, this.ShiftPressed);
+                _PublishedFiddle.Implementation.ApplyOnKeyUp(_OutBuffer, key, this.ShiftPressed);
                 if (_PublishedFiddle.Implementation.IsComplete)
                 {
                     // Fiddle was applied, schedule the next one.

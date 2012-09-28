@@ -26,17 +26,17 @@ namespace MurrayGrant.KeyboardJoke.Services
             _Queue.Enqueue(QueuedEvent.CreateDelay(milliseconds));
             ActionEvent();
         }
-        public void KeyUp(byte key)
+        public void KeyUp(KeyboardKey key)
         {
             _Queue.Enqueue(QueuedEvent.CreateKeyUp(key));
             ActionEvent();
         }
-        public void KeyDown(byte key)
+        public void KeyDown(KeyboardKey key)
         {
             _Queue.Enqueue(QueuedEvent.CreateKeyDown(key));
             ActionEvent();
         }
-        public void KeyPress(byte key)
+        public void KeyPress(KeyboardKey key)
         {
             _Queue.Enqueue(QueuedEvent.CreateKeyPress(key));
             ActionEvent();
@@ -49,10 +49,10 @@ namespace MurrayGrant.KeyboardJoke.Services
 
             // TODO: other modifiers.
             if ((keyAndModifier & KeyboardTables.ShiftModifier) > 0)
-                _Queue.Enqueue(QueuedEvent.CreateKeyDown((byte)GHIElectronics.NETMF.USBClient.USBC_Key.LeftShift));
-            _Queue.Enqueue(QueuedEvent.CreateKeyPress((byte)(keyAndModifier & 0x00ff)));
+                _Queue.Enqueue(QueuedEvent.CreateKeyDown(KeyboardKey.LeftShift));
+            _Queue.Enqueue(QueuedEvent.CreateKeyPress((KeyboardKey)(keyAndModifier & 0x00ff)));
             if ((keyAndModifier & KeyboardTables.ShiftModifier) > 0)
-                _Queue.Enqueue(QueuedEvent.CreateKeyUp((byte)GHIElectronics.NETMF.USBClient.USBC_Key.LeftShift));
+                _Queue.Enqueue(QueuedEvent.CreateKeyUp(KeyboardKey.LeftShift));
             ActionEvent();
         }
 

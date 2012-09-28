@@ -29,15 +29,15 @@ namespace MurrayGrant.KeyboardJoke.Services.Fiddlers
             _IsComplete = false;
         }
 
-        public void ApplyOnKeyDown(DelayBuffer output, byte thisKeyPress, bool isShifted)
+        public void ApplyOnKeyDown(DelayBuffer output, KeyboardKey thisKeyPress, bool isShifted)
         {
             // No-op.                                        
         }
 
-        public void ApplyOnKeyUp(DelayBuffer output, byte thisKeyPress, bool isShifted)
+        public void ApplyOnKeyUp(DelayBuffer output, KeyboardKey thisKeyPress, bool isShifted)
         {
             // Ensure the phrase is inserted at the end of a sentence or paragraph.
-            bool atEndOfSentence = (thisKeyPress == (byte)GHIElectronics.NETMF.USBClient.USBC_Key.Space) 
+            bool atEndOfSentence = (thisKeyPress == KeyboardKey.Space) 
                 && Array.IndexOf(KeyboardTables.EndOfSentenceCharacters, _LastLetterPressed) != -1;
 
             if (atEndOfSentence)
@@ -56,7 +56,7 @@ namespace MurrayGrant.KeyboardJoke.Services.Fiddlers
             else
             {
                 // Capture the last keypress as a character.
-                var c = KeyboardTables.KeyToChar((byte)thisKeyPress, isShifted);
+                var c = KeyboardTables.KeyToChar(thisKeyPress, isShifted);
                 if (c != (char)0)
                     _LastLetterPressed = c;    
             }

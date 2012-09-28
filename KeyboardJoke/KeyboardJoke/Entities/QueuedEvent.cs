@@ -19,15 +19,15 @@ namespace MurrayGrant.KeyboardJoke.Entities
         {
             return (((UInt32)milliseconds) << 16) | (UInt32)EventType.Delay;
         }
-        public static UInt32 CreateKeyDown(byte key)
+        public static UInt32 CreateKeyDown(KeyboardKey key)
         {
             return (((UInt32)key) << 24) | (UInt32)EventType.KeyDown;
         }
-        public static UInt32 CreateKeyUp(byte key)
+        public static UInt32 CreateKeyUp(KeyboardKey key)
         {
             return (((UInt32)key) << 24) | (UInt32)EventType.KeyUp;
         }
-        public static UInt32 CreateKeyPress(byte key)
+        public static UInt32 CreateKeyPress(KeyboardKey key)
         {
             return (((UInt32)key) << 24) | (UInt32)EventType.KeyPress;
         }
@@ -37,13 +37,13 @@ namespace MurrayGrant.KeyboardJoke.Entities
             return (EventType)(byte)d;
         }
 
+        public static KeyboardKey GetKeyPressed(this UInt32 d)
+        {
+            return (KeyboardKey)(d >> 24);
+        }
         public static GHIElectronics.NETMF.USBClient.USBC_Key GetKeyPressedAsClient(this UInt32 d)
         {
-            return (GHIElectronics.NETMF.USBClient.USBC_Key)(byte)(d >> 24);
-        }
-        public static GHIElectronics.NETMF.USBHost.USBH_Key GetKeyPressedAsHost(this UInt32 d)
-        {
-            return (GHIElectronics.NETMF.USBHost.USBH_Key)(byte)(d >> 24);
+            return (GHIElectronics.NETMF.USBClient.USBC_Key)(d >> 24);
         }
 
         public static short GetDelay(this UInt32 d)

@@ -18,18 +18,18 @@ namespace MurrayGrant.KeyboardJoke.Services.Fiddlers
             _IsComplete = false;
         }
 
-        public void ApplyOnKeyDown(DelayBuffer output, byte thisKeyPress, bool isShifted)
+        public void ApplyOnKeyDown(DelayBuffer output, KeyboardKey thisKeyPress, bool isShifted)
         {
             // No-op.
         }
 
-        public void ApplyOnKeyUp(DelayBuffer output, byte thisKeyPress, bool isShifted)
+        public void ApplyOnKeyUp(DelayBuffer output, KeyboardKey thisKeyPress, bool isShifted)
         {
             // If this keypress corresponds to a typable character, queue a backspace to delete it.
             var c = KeyboardTables.KeyToChar(thisKeyPress, isShifted);
             if (c != '\0')
             {
-                output.KeyPress((byte)GHIElectronics.NETMF.USBClient.USBC_Key.BackSpace);
+                output.KeyPress(KeyboardKey.BackSpace);
                 _IsComplete = true;
             }
         }
