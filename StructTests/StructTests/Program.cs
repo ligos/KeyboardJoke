@@ -18,12 +18,14 @@ namespace StructTests
             World = new World();
 
             for (int typeIdx = 0; typeIdx < types.Length; typeIdx++)
+            {
+                var type = types[typeIdx];
+                var typeName = World.GetTypeName(type);
+                Debug.Print("Type = " + typeName);
                 for (int sizeIdx = 0; sizeIdx < sizes.Length; sizeIdx++)
                 {
-                    var type = types[typeIdx];
                     var size = sizes[sizeIdx];
-                    Debug.Print("Type = " + type.ToString());    
-                    Debug.Print("Size = " + size.ToString());
+                    Debug.Print("  Size = " + size.ToString());
 
                     World.ClearAll();
                     var memoryUsageBefore = World.GetMemoryUsage();
@@ -31,10 +33,12 @@ namespace StructTests
                     var memoryUsageAfter = World.GetMemoryUsage();
 
                     var deltaMemory = memoryUsageBefore - memoryUsageAfter;
-                    Debug.Print("Delta memory usage = " + deltaMemory.ToString("N0"));
+                    Debug.Print("  Delta memory usage = " + deltaMemory.ToString("N0"));
                     var estMemoryEach = (double)deltaMemory / (double)size;
-                    Debug.Print("Estimate " + estMemoryEach.ToString("N2") + " bytes per object");
+                    Debug.Print("  Estimate " + estMemoryEach.ToString("N2") + " bytes per object");
                 }
+                Debug.Print("");
+            }
 
             Debug.Print("Main thread sleeping forever.");
             System.Threading.Thread.Sleep(System.Threading.Timeout.Infinite);
