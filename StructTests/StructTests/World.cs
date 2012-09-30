@@ -5,35 +5,96 @@ namespace StructTests
 {
     public class World
     {
-        public readonly byte[] _Bytes;
-        public readonly int[] _Ints;
-        public readonly short[] _Shorts;
-        public readonly long[] _Longs;
-        public readonly Double[] _Doubles;
-        public readonly TimeSpan[] _TimeSpans;
-        public readonly TinyTimeSpan[] _TinyTimeSpans;
-        public readonly JustAnInt32[] _WrappedInt32;
-        public readonly Guid[] _Guids;
-        public readonly QueuedEvent[] _QueuedEntities;
-        public readonly QueuedEventSimple[] _SimpleEvents;
-        public readonly QueuedEventSimpleROStatic[] _SimpleEventsEmptyStatic;
-        public readonly QueuedEventTimeSpan[] _EventsTimespan;
-        public readonly DifferentEntity[] _DifferentEntities;
-        public readonly MultipleEntities[] _MultipleEntities;
-        public readonly TwoDoublesAndTimeSpans[] _DoublesAndTimes;
-        public readonly DateTime[] _DateTimes;
-        public readonly Object[] _Objects;
-        public readonly UInt32[] _UInt32s;
+        private byte[] _Bytes;
+        private int[] _Ints;
+        private short[] _Shorts;
+        private long[] _Longs;
+        private Double[] _Doubles;
+        private TimeSpan[] _TimeSpans;
+        private TinyTimeSpan[] _TinyTimeSpans;
+        private JustAnInt32[] _WrappedInt32;
+        private Guid[] _Guids;
+        private QueuedEvent[] _QueuedEntities;
+        private QueuedEventSimple[] _SimpleEvents;
+        private QueuedEventSimpleROStatic[] _SimpleEventsEmptyStatic;
+        private QueuedEventTimeSpan[] _EventsTimespan;
+        private DifferentEntity[] _DifferentEntities;
+        private MultipleEntities[] _MultipleEntities;
+        private TwoDoublesAndTimeSpans[] _DoublesAndTimes;
+        private DateTime[] _DateTimes;
+        private Object[] _Objects;
+        private UInt32[] _UInt32s;
 
-        public World(int size)
+
+        public void SetArray(uint type, int size)
         {
-            _UInt32s = new UInt32[size];
+            if (type == (1 << 0))
+                _Bytes = new byte[size];
+            else if (type == (1 << 1))
+                _Ints = new int[size];
+            else if (type == (1 << 2))
+                _Shorts = new short[0];
+            else if (type == (1 << 3))
+                _Longs = new long[size];
+            else if (type == (1 << 4))
+                _Doubles = new Double[size];
+            else if (type == (1 << 5))
+                _TimeSpans = new TimeSpan[size];
+            else if (type == (1 << 6))
+                _TinyTimeSpans = new TinyTimeSpan[size];
+            else if (type == (1 << 7))
+                _WrappedInt32 = new JustAnInt32[size];
+            else if (type == (1 << 8))
+                _Guids = new Guid[size];
+            else if (type == (1 << 9))
+                _QueuedEntities = new QueuedEvent[size];
+            else if (type == (1 << 10))
+                _SimpleEvents = new QueuedEventSimple[size];
+            else if (type == (1 << 11))
+                _SimpleEventsEmptyStatic = new QueuedEventSimpleROStatic[size];
+            else if (type == (1 << 12))
+                _EventsTimespan = new QueuedEventTimeSpan[size];
+            else if (type == (1 << 13))
+                _DifferentEntities = new DifferentEntity[size];
+            else if (type == (1 << 14))
+                _MultipleEntities = new MultipleEntities[size];
+            else if (type == (1 << 15))
+                _DoublesAndTimes = new TwoDoublesAndTimeSpans[size];
+            else if (type == (1 << 16))
+                _DateTimes = new DateTime[size];
+            else if (type == (1 << 17))
+                _Objects = new Object[size];
+            else if (type == (1 << 18))
+                _UInt32s = new UInt32[size];
         }
 
-        public int GetLength()
+        public void ClearAll()
         {
-            //return 0;
-            return _UInt32s.Length;
+            _Bytes = new byte[0];
+            _Ints = new int[0];
+            _Shorts = new short[0];
+            _Longs = new long[0];
+            _Doubles = new Double[0];
+            _TimeSpans = new TimeSpan[0];
+            _TinyTimeSpans = new TinyTimeSpan[0];
+            _WrappedInt32 = new JustAnInt32[0];
+            _Guids = new Guid[0];
+            _QueuedEntities = new QueuedEvent[0];
+            _SimpleEvents = new QueuedEventSimple[0];
+            _SimpleEventsEmptyStatic = new QueuedEventSimpleROStatic[0];
+            _EventsTimespan = new QueuedEventTimeSpan[0];
+            _DifferentEntities = new DifferentEntity[0];
+            _MultipleEntities = new MultipleEntities[0];
+            _DoublesAndTimes = new TwoDoublesAndTimeSpans[0];
+            _DateTimes = new DateTime[0];
+            _Objects = new Object[0];
+            _UInt32s = new UInt32[0];
+        }
+
+        public uint GetMemoryUsage()
+        {
+            Debug.GC(true);
+            return Debug.GC(true);
         }
     }
 }
