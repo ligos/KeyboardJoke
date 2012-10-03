@@ -31,5 +31,10 @@ namespace MurrayGrant.KeyboardJoke
         public int Probability { get; set; }
         public TimeSpan MinDelay { get; set; }
         public TimeSpan MaxDelay { get; set; }
+
+        public override string ToString()
+        {
+            return Implementation.GetType().Name;
+        }
     }
 }
