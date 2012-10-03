@@ -24,6 +24,9 @@ namespace MurrayGrant.KeyboardJoke
 
                 cfg.FiddleConfig = new FiddleConfig();
                 cfg.FiddleConfig.DebugScaleingFactor = 0.07;
+                cfg.FiddleConfig.InactivityTimeout = new TimeSpan(TimeSpan.TicksPerMinute * 10);
+                cfg.FiddleConfig.MinTimeToFirstFiddle = new TimeSpan(TimeSpan.TicksPerMinute * 2);
+                cfg.FiddleConfig.MinKeystrokesToFirstFiddle = 80;
                 cfg.FiddleConfig.Definitions = new FiddleDefinition[1];
 
                 int i = 0;

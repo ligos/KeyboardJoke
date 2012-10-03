@@ -9,19 +9,22 @@ namespace MurrayGrant.KeyboardJoke.Services
 {
     public class KeyboardInput
     {
+        // Mutable variables representing current state.
+        private TimeSpan _MinimumDelay;                 // To delay based on startup / after period of inactivity.
+        private int _MinimumKeystrokes;                 // To delay based on startup / after period of inactivity.
+        private FiddleDefinition _SelectedFiddle;       // This is set with the timer when the next fiddle definition is selected.
+        private FiddleDefinition _PublishedFiddle;      // When the timer elapses this is set, it is checked on each key press to action the fiddle.
+        private readonly Timer _NextFiddleEvents;       // Once a fiddle is selected, this timer sets when it gets published and applied.
+        private readonly Timer _InactivityTimer;        // To detect a period of inactivity.
+        private bool _IsInactive;                       // True when inactive, false otherwise.
+     
+        // Immutable (or mostly immutable) state (eg: configuration).
         private USBH_Keyboard _Keyboard;
-        private TimeSpan _KeyboardAttachedAt;           // To delay based on startup.
         private readonly DelayBuffer _OutBuffer;
         private readonly bool _InDebugMode;
-
         private readonly UserInterface _Ui;
         private readonly Random _Rand;
         private readonly FiddleConfig _Config;
-        private readonly Timer _NextFiddleEvents;
-        private FiddleDefinition _SelectedFiddle;       // This is set with the timer when the next fiddle definition is selected.
-        private FiddleDefinition _PublishedFiddle;      // When the timer elapses this is set, it is checked on each key press to action the fiddle.
-        private TimeSpan _LastKeyAction;                // Set to GetMachineTime() each key press to detect inactivity.
-        private int _KeyPresses;
 
         public bool ShiftPressed { get; private set; }
 
@@ -31,8 +34,12 @@ namespace MurrayGrant.KeyboardJoke.Services
             _OutBuffer = new DelayBuffer(output, ui);
             _Config = config;
             _NextFiddleEvents = new Timer(this.FiddleHandler, null, Timeout.Infinite, Timeout.Infinite);
+            _InactivityTimer = new Timer(this.InactivityTimerHandler, null, Timeout.Infinite, Timeout.Infinite);
             _Rand = new Random((int)(Utility.GetMachineTime().Ticks & 0x00000000ffffffff));
             _InDebugMode = inDebugMode;
+
+            _MinimumDelay = TimeSpan.MaxValue;
+            _MinimumKeystrokes = Int32.MaxValue;
 
         }
 
@@ -42,10 +49,14 @@ namespace MurrayGrant.KeyboardJoke.Services
             _Keyboard.KeyUp += new USBH_KeyboardEventHandler(_HostKeyboard_KeyUp);
             _Keyboard.KeyDown += new USBH_KeyboardEventHandler(_HostKeyboard_KeyDown);
             _Keyboard.Disconnected += new USBH_KeyboardEventHandler(_Keyboard_Disconnected);
-            _KeyboardAttachedAt = Utility.GetMachineTime();
 
-            _LastKeyAction = _KeyboardAttachedAt;       // Initialise the timeout.
-            SelectNextFiddle();                         // Select our first fiddle.
+            // Nothing is scheduled up front, we have to wait for the minimum time & keystrokes before anything happens.
+            SetMinimumCounters();
+            _NextFiddleEvents.Change(Timeout.Infinite, Timeout.Infinite);
+            _InactivityTimer.Change(Timeout.Infinite, Timeout.Infinite);
+            _PublishedFiddle = null;
+            _SelectedFiddle = null;
+            _IsInactive = false;
         }
 
 
@@ -57,10 +68,15 @@ namespace MurrayGrant.KeyboardJoke.Services
             _Keyboard.Disconnected -= new USBH_KeyboardEventHandler(_Keyboard_Disconnected);
             _Keyboard = null;
 
-            // Null any events.
+            // Null any events / state.
             _NextFiddleEvents.Change(Timeout.Infinite, Timeout.Infinite);
+            _InactivityTimer.Change(Timeout.Infinite, Timeout.Infinite);
             _PublishedFiddle = null;
             _SelectedFiddle = null;
+            _MinimumKeystrokes = Int32.MaxValue;
+            _MinimumDelay = TimeSpan.MaxValue;
+            _IsInactive = false;
+            _Ui.CurrentState = UnitState.None;
         }
 
         private void _HostKeyboard_KeyDown(USBH_Keyboard sender, USBH_KeyboardEventArgs args)
@@ -73,10 +89,20 @@ namespace MurrayGrant.KeyboardJoke.Services
             // Must have an inital delay period before anything happens so logins can happen OK.
             //  - A certain number of keystrokes and time must pass.
 
+            // Handle the key event ASAP.
             var key = (KeyboardKey)args.Key;
             _OutBuffer.KeyDown(key);
-            _LastKeyAction = Utility.GetMachineTime();
             this.ShiftPressed = (_Keyboard.GetKeyState(USBH_Key.LeftShift) == USBH_KeyState.Down) || (_Keyboard.GetKeyState(USBH_Key.RightShift) == USBH_KeyState.Down);
+            
+            // Handle inactivity and minimum time before start state.
+            this.SetInactivityTimeout();
+
+            if (_IsInactive)
+            {
+                // Transition to initial delay state by initialising the minimum variables.
+                SetMinimumCounters();
+                _IsInactive = false;
+            }
 
             if (_PublishedFiddle != null)
             {
@@ -88,8 +114,6 @@ namespace MurrayGrant.KeyboardJoke.Services
                     _PublishedFiddle.Implementation.AfterCompletion();
                     _PublishedFiddle = null;
                     _Ui.FiddlesMade = _Ui.FiddlesMade + 1;
-                    _Ui.FiddleScheduled = false;
-
                     SelectNextFiddle();
                 }
             }
@@ -97,12 +121,20 @@ namespace MurrayGrant.KeyboardJoke.Services
 
         private void _HostKeyboard_KeyUp(USBH_Keyboard sender, USBH_KeyboardEventArgs args)
         {
+            // Handle the key press ASAP.
             var key = (KeyboardKey)args.Key;
             _OutBuffer.KeyUp(key);
-            _LastKeyAction = Utility.GetMachineTime();
             this.ShiftPressed = (_Keyboard.GetKeyState(USBH_Key.LeftShift) == USBH_KeyState.Down) || (_Keyboard.GetKeyState(USBH_Key.RightShift) == USBH_KeyState.Down);
-            _KeyPresses++;      // Count key presses to allow for an initial delay.
-            
+
+            // Handle inactivity and minimum time before start state.
+            _MinimumKeystrokes--;
+
+            if (_SelectedFiddle == null && _PublishedFiddle == null && _MinimumDelay < Utility.GetMachineTime() && _MinimumKeystrokes <= 0)
+            {
+                // Transition to active state by selecting the next fiddle to publish.
+                SelectNextFiddle();
+            }
+
             if (_PublishedFiddle != null)
             {
                 // Call fiddler to adjust our output.
@@ -113,8 +145,6 @@ namespace MurrayGrant.KeyboardJoke.Services
                     _PublishedFiddle.Implementation.AfterCompletion();
                     _PublishedFiddle = null;
                     _Ui.FiddlesMade = _Ui.FiddlesMade + 1;
-                    _Ui.FiddleScheduled = false;
-
                     SelectNextFiddle();
                 }
             }
@@ -130,7 +160,30 @@ namespace MurrayGrant.KeyboardJoke.Services
             _PublishedFiddle = _SelectedFiddle;
             _SelectedFiddle = null;
             _NextFiddleEvents.Change(Timeout.Infinite, Timeout.Infinite);
-            _Ui.FiddleScheduled = true;
+            _Ui.CurrentState = UnitState.Applying;
+        }
+        
+        private void InactivityTimerHandler(object arg)
+        {
+            // First off, deactivate the fiddle handler timer so nothing gets published.
+            _NextFiddleEvents.Change(Timeout.Infinite, Timeout.Infinite);
+
+            // Deactivate any fiddlers which may be (or may about to be) active.
+            if (_PublishedFiddle != null)
+            {
+                _PublishedFiddle.Implementation.AfterCompletion();
+                _PublishedFiddle = null;
+            }
+            if (_SelectedFiddle != null)
+            {
+                _SelectedFiddle.Implementation.AfterCompletion();
+                _PublishedFiddle = null;
+            }
+
+            // The inactivity timer is now disabled until some keys are pressed.
+            _InactivityTimer.Change(Timeout.Infinite, Timeout.Infinite);
+            _IsInactive = true;
+            _Ui.CurrentState = UnitState.Inactive;
         }
 
         private void SelectNextFiddle()
@@ -155,6 +208,7 @@ namespace MurrayGrant.KeyboardJoke.Services
                     theChosenOne = defs[defs.Length-1];
             }
             _SelectedFiddle = theChosenOne;
+            _Ui.CurrentState = UnitState.Scheduled;
 
             // Now choose when to perform it.
             var millisecondRange = (int)((theChosenOne.MaxDelay.Ticks - theChosenOne.MinDelay.Ticks) / TimeSpan.TicksPerMillisecond);
@@ -163,6 +217,29 @@ namespace MurrayGrant.KeyboardJoke.Services
             if (_InDebugMode)
                 delayMilliseconds = (int)(delayMilliseconds * _Config.DebugScaleingFactor);
             _NextFiddleEvents.Change(delayMilliseconds, Timeout.Infinite);
+        }
+
+        private void SetMinimumCounters()
+        {
+            if (!_InDebugMode)
+            {
+                _MinimumKeystrokes = _Config.MinKeystrokesToFirstFiddle;
+                _MinimumDelay = Utility.GetMachineTime() + _Config.MinTimeToFirstFiddle;
+            }
+            else
+            {
+                _MinimumKeystrokes = (int)(_Config.MinKeystrokesToFirstFiddle * _Config.DebugScaleingFactor);
+                _MinimumDelay = Utility.GetMachineTime() + new TimeSpan((long)(_Config.MinTimeToFirstFiddle.Ticks * _Config.DebugScaleingFactor));
+            }
+            _Ui.CurrentState = UnitState.Waiting;
+        }
+
+        private void SetInactivityTimeout()
+        {
+            var timeout = _Config.InactivityTimeout;
+            if (_InDebugMode)
+                timeout = new TimeSpan((long)(_Config.DebugScaleingFactor * _Config.InactivityTimeout.Ticks));
+            _InactivityTimer.Change(timeout, timeout);
         }
     }
 }

@@ -33,7 +33,7 @@
   <ItemGroup>
     <Compile Include="Configuration.cs" />
     <Compile Include="Entities\KeyboardTables.cs" />
-    <Compile Include="Entities\KeyPress.cs" />
+    <Compile Include="Entities\KeyboardKey.cs" />
     <Compile Include="Services\DelayBuffer.cs" />
     <Compile Include="Entities\FixedSizeQueue.cs" />
     <Compile Include="Entities\QueuedEvent.cs" />
@@ -54,7 +54,6 @@
     <Compile Include="Services\LedBlinker.cs" />
     <Compile Include="Services\UserInterface.cs" />
     <Compile Include="Services\WallClock.cs" />
-    <Compile Include="Services\WorldUpdateRate.cs" />
     <Compile Include="World.cs" />
   </ItemGroup>
   <ItemGroup>

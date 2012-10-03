@@ -6,6 +6,15 @@ using MurrayGrant.KeyboardJoke.Entities;
 
 namespace MurrayGrant.KeyboardJoke.Services
 {
+    public enum UnitState
+    {
+        None,               // Keyboard not connected or not yet initialised.
+        Waiting,            // Waiting for initial time / keypress delay to elapse.
+        Inactive,           // Inactivity detected.
+        Scheduled,          // Fiddle scheduled and waiting to time to elapse.
+        Applying,           // Fiddle applying (or ready to apply on next keystroke).
+    }
+
     public class UserInterface
     {
         private const int ButtonPollInterval = 150;
@@ -19,16 +28,17 @@ namespace MurrayGrant.KeyboardJoke.Services
         private bool _RequiresUpdate = false;
         private int _KeystrokesReceived = 0;
         private int _FiddlesMade = 0;
-        private bool _FiddleScheduled = false;
-        private TinyTimeSpan _KeyEchoDelay = TinyTimeSpan.Zero;
+        private UnitState _CurrentState = UnitState.None;
+        private bool _InactivityDetected = false;
         private bool _LcdBacklightOn;
         private TimeSpan _TurnOffBacklightAfter = TimeSpan.Zero;
 
         public int KeystrokesReceived { get { return _KeystrokesReceived; } set { _KeystrokesReceived = value; _RequiresUpdate = true; } }
         public int FiddlesMade { get { return _FiddlesMade; } set { _FiddlesMade = value; _RequiresUpdate = true; } }
-        public bool FiddleScheduled { get { return _FiddleScheduled; } set { _FiddleScheduled = value; _RequiresUpdate = true; } }
         public bool LcdBacklightOn { get { return _LcdBacklightOn; } set { _LcdBacklightOn = value; _RequiresUpdate = true; } }
 
+        public UnitState CurrentState { get { return _CurrentState; } set { _CurrentState= value; _RequiresUpdate = true; } }
+ 
         public UserInterface(LcdAndKeypad lcd, bool debuggerRunning)
         {
             _Lcd = lcd;
@@ -61,6 +71,7 @@ namespace MurrayGrant.KeyboardJoke.Services
                 _Lcd.SetCursorPosition(0, 14);
                 _Lcd.Print('D');
             }
+            _RequiresUpdate = true;     // Make sure at least one UI update occurs.
             _Lcd.CursorHome();
 
             // Now start the timer to keep it re-drawing and polling buttons;
@@ -114,7 +125,7 @@ namespace MurrayGrant.KeyboardJoke.Services
             try
             {
                 // 1234567890123456
-                // Keyboard Joke DF     // Does not change; set in Start(). D = debugger available (keys are not echoed), X = fiiddle scheduled
+                // Keyboard Joke DX     // Does not change; set in Start(). D = debugger available (keys are not echoed), X = CurrentState
                 // 12345678  123456     // Count of keystrokes received, delay between receive and echo.
 
 
@@ -133,10 +144,19 @@ namespace MurrayGrant.KeyboardJoke.Services
                 _Lcd.SetCursorPosition(1, 10);
                 _Lcd.Print(_FiddlesMade.ToString());
 
-                // Fiddle scheduled.
+                // Current unit state.
                 _Lcd.SetCursorPosition(0, 15);
-                _Lcd.Print(_FiddleScheduled ? 'F' : ' ');
-                
+                if (_CurrentState == UnitState.Waiting)
+                    _Lcd.Print('W');
+                else if (_CurrentState == UnitState.Inactive)
+                    _Lcd.Print('I');
+                else if (_CurrentState == UnitState.Scheduled)
+                    _Lcd.Print('S');
+                else if (_CurrentState == UnitState.Applying)
+                    _Lcd.Print('A');
+                else
+                    _Lcd.Print('?');
+
                 _RequiresUpdate = false;
             }
             catch (Exception ex)

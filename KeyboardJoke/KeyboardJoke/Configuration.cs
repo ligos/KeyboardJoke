@@ -16,7 +16,10 @@ namespace MurrayGrant.KeyboardJoke
 
     public class FiddleConfig
     {
-        public double DebugScaleingFactor { get; set; }
+        public double DebugScaleingFactor { get; set; } 
+        public TimeSpan InactivityTimeout { get; set; }         // After not seeing any keystrokes for this long, fiddles will not be selected.
+        public TimeSpan MinTimeToFirstFiddle { get; set; }      // This amount of time AND below keystrokes must pass without inactivty to enable fiddles.
+        public int MinKeystrokesToFirstFiddle { get; set; }     // This number of keystrokes AND above time must pass without inactivty to enable fiddles.
 
         public FiddleDefinition[] Definitions { get; set; }
     }
