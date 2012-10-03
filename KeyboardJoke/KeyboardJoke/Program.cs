@@ -21,8 +21,9 @@ namespace MurrayGrant.KeyboardJoke
                 var cfg = new Configuration();
                 cfg.LedPin = FEZ_Pin.Digital.LED;
                 cfg.HasLcd = true;
-
+                
                 cfg.FiddleConfig = new FiddleConfig();
+                cfg.FiddleConfig.RandomSeed = 0xDC0786AF;
                 cfg.FiddleConfig.DebugScaleingFactor = 0.07;
                 cfg.FiddleConfig.InactivityTimeout = new TimeSpan(TimeSpan.TicksPerMinute * 10);
                 cfg.FiddleConfig.MinTimeToFirstFiddle = new TimeSpan(TimeSpan.TicksPerMinute * 2);

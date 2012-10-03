@@ -23,7 +23,7 @@ namespace MurrayGrant.KeyboardJoke.Services
         private readonly DelayBuffer _OutBuffer;
         private readonly bool _InDebugMode;
         private readonly UserInterface _Ui;
-        private readonly Random _Rand;
+        private Random _Rand;
         private readonly FiddleConfig _Config;
 
         public bool ShiftPressed { get; private set; }
@@ -35,9 +35,8 @@ namespace MurrayGrant.KeyboardJoke.Services
             _Config = config;
             _NextFiddleEvents = new Timer(this.FiddleHandler, null, Timeout.Infinite, Timeout.Infinite);
             _InactivityTimer = new Timer(this.InactivityTimerHandler, null, Timeout.Infinite, Timeout.Infinite);
-            _Rand = new Random((int)(Utility.GetMachineTime().Ticks & 0x00000000ffffffff));
             _InDebugMode = inDebugMode;
-
+            _Rand = new Random((int)(Utility.GetMachineTime().Ticks & 0x00000000ffffffff));
             _MinimumDelay = TimeSpan.MaxValue;
             _MinimumKeystrokes = Int32.MaxValue;
 
@@ -49,6 +48,13 @@ namespace MurrayGrant.KeyboardJoke.Services
             _Keyboard.KeyUp += new USBH_KeyboardEventHandler(_HostKeyboard_KeyUp);
             _Keyboard.KeyDown += new USBH_KeyboardEventHandler(_HostKeyboard_KeyDown);
             _Keyboard.Disconnected += new USBH_KeyboardEventHandler(_Keyboard_Disconnected);
+
+            // Create a random seed using:
+            uint seed = _Config.RandomSeed;         // A random number from the internet!
+            seed = seed ^ (uint)(((uint)device.VENDOR_ID << 16) | device.PRODUCT_ID);       // The USB vendor and device ids.
+            seed = seed ^ (uint)(device.ID << 9);          // Some other USB ID.
+            seed = seed ^ (uint)(Utility.GetMachineTime().Ticks & 0x00000000ffffffff);      // The current time.
+            _Rand = new Random((int)seed);
 
             // Nothing is scheduled up front, we have to wait for the minimum time & keystrokes before anything happens.
             SetMinimumCounters();
