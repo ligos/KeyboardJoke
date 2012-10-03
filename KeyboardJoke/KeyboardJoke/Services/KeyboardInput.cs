@@ -81,14 +81,6 @@ namespace MurrayGrant.KeyboardJoke.Services
 
         private void _HostKeyboard_KeyDown(USBH_Keyboard sender, USBH_KeyboardEventArgs args)
         {
-            // Ways to fiddle input:
-            //  - Delay key strokes by an increasing amount for a few seconds, so it appears the keyboard is lagging.
-            //  - Duplicate key strokes at random.
-            //  - Insert additional phrases
-
-            // Must have an inital delay period before anything happens so logins can happen OK.
-            //  - A certain number of keystrokes and time must pass.
-
             // Handle the key event ASAP.
             var key = (KeyboardKey)args.Key;
             _OutBuffer.KeyDown(key);
