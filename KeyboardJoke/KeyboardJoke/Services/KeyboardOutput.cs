@@ -15,7 +15,8 @@ namespace MurrayGrant.KeyboardJoke.Services
 
         public void Stop()
         {
-            USBClientController.Stop();
+            if (USBClientController.GetState() != USBClientController.State.Stopped)
+                USBClientController.Stop();
             _KeyboardClient = null;
         }
 

@@ -53,6 +53,7 @@
     <Compile Include="Services\KeyboardOutput.cs" />
     <Compile Include="Services\Lcd.cs" />
     <Compile Include="Services\LedBlinker.cs" />
+    <Compile Include="Services\MouseEcho.cs" />
     <Compile Include="Services\UserInterface.cs" />
     <Compile Include="Services\WallClock.cs" />
     <Compile Include="World.cs" />

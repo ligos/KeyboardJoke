@@ -29,7 +29,6 @@ namespace MurrayGrant.KeyboardJoke.Services
         private int _KeystrokesReceived = 0;
         private int _FiddlesMade = 0;
         private UnitState _CurrentState = UnitState.None;
-        private bool _InactivityDetected = false;
         private bool _LcdBacklightOn;
         private TimeSpan _TurnOffBacklightAfter = TimeSpan.Zero;
 

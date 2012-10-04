@@ -13,6 +13,7 @@ namespace MurrayGrant.KeyboardJoke
         private UserInterface _UI;
         private KeyboardInput _KeyboardInput;
         private KeyboardOutput _KeyboardOutput;
+        private MouseEcho _MouseEcho;
         private FiddleConfig _FiddleConfig;
         private bool _DebuggerOnUsb;
 
@@ -77,6 +78,12 @@ namespace MurrayGrant.KeyboardJoke
             {
                 _KeyboardInput = new KeyboardInput(_UI, _KeyboardOutput, _FiddleConfig, _DebuggerOnUsb);
                 _KeyboardInput.BeginMonitorInputFrom(device);
+            }
+            else if (device.TYPE == USBH_DeviceType.Mouse)
+            {
+                _MouseEcho = new MouseEcho(_DebuggerOnUsb);
+                // This throws because you can only have one of the standard devices running on the client at a time.
+                //_MouseEcho.BeginMouseEmulation(device);
             }
         }
         #endregion

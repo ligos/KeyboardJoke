@@ -31,7 +31,7 @@ namespace MurrayGrant.KeyboardJoke
                 cfg.FiddleConfig.Definitions = new FiddleDefinition[4];
 
                 int i = 0;
-                var phrases = new string[] { "Phrase", "Another", "Project", "Refactor" };
+                var phrases = new string[] { "SPeelingErrorrs", "Burrrrrp!", "Your-Keyboard-Hates-You", "PLEASE DON'T SHOUT!!!!1!" };
                 cfg.FiddleConfig.Definitions[i] = new FiddleDefinition();
                 cfg.FiddleConfig.Definitions[i].Implementation = new Services.Fiddlers.InsertPhraseFiddler(phrases);
                 cfg.FiddleConfig.Definitions[i].Probability = 0x00000000;          // Probabilities should scale from 0 to Int32.MaxValue-1 and be sorted accordingly.
