@@ -49,11 +49,11 @@
     <Compile Include="Services\Fiddlers\DuplicateKeyFiddler.cs" />
     <Compile Include="Services\Fiddlers\IFiddler.cs" />
     <Compile Include="Services\Fiddlers\InsertPhraseFiddler.cs" />
-    <Compile Include="Services\KeyboardInput.cs" />
-    <Compile Include="Services\KeyboardOutput.cs" />
+    <Compile Include="Services\KeyboardAndMouseInput.cs" />
+    <Compile Include="Services\KeyboardAndMouseOutput.cs" />
     <Compile Include="Services\Lcd.cs" />
     <Compile Include="Services\LedBlinker.cs" />
-    <Compile Include="Services\MouseEcho.cs" />
+    <Compile Include="Drivers\USBC_KeyboardAndMouse.cs" />
     <Compile Include="Services\UserInterface.cs" />
     <Compile Include="Services\WallClock.cs" />
     <Compile Include="World.cs" />
@@ -67,6 +67,7 @@
     <Reference Include="GHIElectronics.NETMF.USBClient, Version=4.1.8.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="GHIElectronics.NETMF.USBHost, Version=4.1.8.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.SPOT.Hardware" />
+    <Reference Include="Microsoft.SPOT.Hardware.Usb" />
     <Reference Include="Microsoft.SPOT.IO" />
     <Reference Include="Microsoft.SPOT.Native" />
     <Reference Include="System.IO" />

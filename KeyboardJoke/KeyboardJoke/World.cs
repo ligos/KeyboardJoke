@@ -11,9 +11,8 @@ namespace MurrayGrant.KeyboardJoke
     {
         private LedBlinker _HeartBeat;
         private UserInterface _UI;
-        private KeyboardInput _KeyboardInput;
-        private KeyboardOutput _KeyboardOutput;
-        private MouseEcho _MouseEcho;
+        private KeyboardAndMouseInput _KeyboardAndMouseInput;
+        private KeyboardAndMouseOutput _KeyboardAndMouseOutput;
         private FiddleConfig _FiddleConfig;
         private bool _DebuggerOnUsb;
 
@@ -54,9 +53,9 @@ namespace MurrayGrant.KeyboardJoke
                     this._HeartBeat.Start();
 
                 // Start up the keyboard client.
-                _KeyboardOutput = new KeyboardOutput();
+                _KeyboardAndMouseOutput = new KeyboardAndMouseOutput();
                 if (!_DebuggerOnUsb)
-                    _KeyboardOutput.Start();
+                    _KeyboardAndMouseOutput.Start();
 
                 // Monitor USB host devices being added to detect a keyboard.
                 _FiddleConfig = cfg.FiddleConfig;
@@ -76,14 +75,15 @@ namespace MurrayGrant.KeyboardJoke
         {
             if (device.TYPE == USBH_DeviceType.Keyboard)
             {
-                _KeyboardInput = new KeyboardInput(_UI, _KeyboardOutput, _FiddleConfig, _DebuggerOnUsb);
-                _KeyboardInput.BeginMonitorInputFrom(device);
+                if (_KeyboardAndMouseInput == null)
+                    _KeyboardAndMouseInput = new KeyboardAndMouseInput(_UI, _KeyboardAndMouseOutput, _FiddleConfig, _DebuggerOnUsb);
+                _KeyboardAndMouseInput.BeginMonitorKeyboardFrom(device);
             }
             else if (device.TYPE == USBH_DeviceType.Mouse)
             {
-                _MouseEcho = new MouseEcho(_DebuggerOnUsb);
-                // This throws because you can only have one of the standard devices running on the client at a time.
-                //_MouseEcho.BeginMouseEmulation(device);
+                if (_KeyboardAndMouseInput == null)
+                    _KeyboardAndMouseInput = new KeyboardAndMouseInput(_UI, _KeyboardAndMouseOutput, _FiddleConfig, _DebuggerOnUsb);
+                _KeyboardAndMouseInput.BeginMonitorMouseFrom(device);
             }
         }
         #endregion

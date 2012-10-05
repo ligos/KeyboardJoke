@@ -7,13 +7,13 @@ namespace MurrayGrant.KeyboardJoke.Services
 {
     public class DelayBuffer
     {
-        private readonly KeyboardOutput _KeyboardOut;
+        private readonly KeyboardAndMouseOutput _KeyboardOut;
         private readonly FixedSizeQueue _Queue;
         private readonly Timer _Timer;
         private readonly UserInterface _UI;
         private bool _IsDelaying = false;
 
-        public DelayBuffer(KeyboardOutput keyboardOut, UserInterface ui)
+        public DelayBuffer(KeyboardAndMouseOutput keyboardOut, UserInterface ui)
         {
             _KeyboardOut = keyboardOut;
             _Queue = new FixedSizeQueue(256);

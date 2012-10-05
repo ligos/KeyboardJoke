@@ -7,7 +7,7 @@ using MurrayGrant.KeyboardJoke.Entities;
 
 namespace MurrayGrant.KeyboardJoke.Services
 {
-    public class KeyboardInput
+    public class KeyboardAndMouseInput
     {
         // Mutable variables representing current state.
         private TimeSpan _MinimumDelay;                 // To delay based on startup / after period of inactivity.
@@ -20,6 +20,8 @@ namespace MurrayGrant.KeyboardJoke.Services
      
         // Immutable (or mostly immutable) state (eg: configuration).
         private USBH_Keyboard _Keyboard;
+        private USBH_Mouse _Mouse;
+        private KeyboardAndMouseOutput _Output;
         private readonly DelayBuffer _OutBuffer;
         private readonly bool _InDebugMode;
         private readonly UserInterface _Ui;
@@ -28,10 +30,11 @@ namespace MurrayGrant.KeyboardJoke.Services
 
         public bool ShiftPressed { get; private set; }
 
-        public KeyboardInput(UserInterface ui, KeyboardOutput output, FiddleConfig config, bool inDebugMode)
+        public KeyboardAndMouseInput(UserInterface ui, KeyboardAndMouseOutput output, FiddleConfig config, bool inDebugMode)
         {
             _Ui = ui;
             _OutBuffer = new DelayBuffer(output, ui);
+            _Output = output;
             _Config = config;
             _NextFiddleEvents = new Timer(this.FiddleHandler, null, Timeout.Infinite, Timeout.Infinite);
             _InactivityTimer = new Timer(this.InactivityTimerHandler, null, Timeout.Infinite, Timeout.Infinite);
@@ -42,7 +45,31 @@ namespace MurrayGrant.KeyboardJoke.Services
 
         }
 
-        public void BeginMonitorInputFrom(USBH_Device device)
+        public void BeginMonitorMouseFrom(USBH_Device device)
+        {
+            _Mouse = new USBH_Mouse(device);
+            _Mouse.Disconnected +=new USBH_MouseEventHandler(Mouse_Disconnected);
+            _Mouse.MouseDown +=new USBH_MouseEventHandler(Mouse_Activity);
+            _Mouse.MouseUp += new USBH_MouseEventHandler(Mouse_Activity);
+            _Mouse.MouseMove += new USBH_MouseEventHandler(Mouse_Activity);
+        }
+
+        private void Mouse_Activity(USBH_Mouse sender, USBH_MouseEventArgs args)
+        {
+            _Output.MouseData(args.DeltaPosition.X, args.DeltaPosition.Y, args.DeltaPosition.ScrollWheelValue, (GHIElectronics.NETMF.USBClient.USBC_Mouse.Buttons)args.ButtonState);
+        }
+
+        private void Mouse_Disconnected(USBH_Mouse sender, USBH_MouseEventArgs args)
+        {
+            // Unhook event handlers and null our host mouse device.
+            _Mouse.Disconnected -= new USBH_MouseEventHandler(Mouse_Disconnected);
+            _Mouse.MouseDown -= new USBH_MouseEventHandler(Mouse_Activity);
+            _Mouse.MouseUp -= new USBH_MouseEventHandler(Mouse_Activity);
+            _Mouse.MouseMove -= new USBH_MouseEventHandler(Mouse_Activity);
+            _Mouse = null;
+        }
+
+        public void BeginMonitorKeyboardFrom(USBH_Device device)
         {
             _Keyboard = new USBH_Keyboard(device);
             _Keyboard.KeyUp += new USBH_KeyboardEventHandler(_HostKeyboard_KeyUp);
