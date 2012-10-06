@@ -17,6 +17,8 @@ namespace MurrayGrant.KeyboardJoke
                 Debug.Print("Constructing World()");
 #if DEBUG
                 Debug.EnableGCMessages(true);
+#else
+                Debug.EnableGCMessages(false);
 #endif
                 var cfg = new Configuration();
                 cfg.LedPin = FEZ_Pin.Digital.LED;

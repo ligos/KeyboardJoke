@@ -151,9 +151,9 @@ namespace MurrayGrant.KeyboardJoke.Drivers
             KeyUp(key);
         }
 
-        public void SendMouseData(int dx, int dy, int dw, USBC_Mouse.Buttons buttons)
+        public void SendMouseData(int dx, int dy, int dw, USBC_Mouse.Buttons buttonState)
         {
-            this._MouseReport[0] = (byte)buttons;
+            this._MouseReport[0] = (byte)buttonState;
             this._MouseReport[1] = (byte)dx;
             this._MouseReport[2] = (byte)dy;
             this._MouseReport[3] = (byte)dw;

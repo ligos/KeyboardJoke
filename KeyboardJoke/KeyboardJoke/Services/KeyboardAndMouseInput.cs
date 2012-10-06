@@ -17,6 +17,7 @@ namespace MurrayGrant.KeyboardJoke.Services
         private readonly Timer _NextFiddleEvents;       // Once a fiddle is selected, this timer sets when it gets published and applied.
         private readonly Timer _InactivityTimer;        // To detect a period of inactivity.
         private bool _IsInactive;                       // True when inactive, false otherwise.
+        private GHIElectronics.NETMF.USBClient.USBC_Mouse.Buttons _MouseButtonState;        // Bit field.
      
         // Immutable (or mostly immutable) state (eg: configuration).
         private USBH_Keyboard _Keyboard;
@@ -52,11 +53,29 @@ namespace MurrayGrant.KeyboardJoke.Services
             _Mouse.MouseDown +=new USBH_MouseEventHandler(Mouse_Activity);
             _Mouse.MouseUp += new USBH_MouseEventHandler(Mouse_Activity);
             _Mouse.MouseMove += new USBH_MouseEventHandler(Mouse_Activity);
+            _Mouse.MouseWheel += new USBH_MouseEventHandler(Mouse_Activity);
         }
 
         private void Mouse_Activity(USBH_Mouse sender, USBH_MouseEventArgs args)
         {
-            _Output.MouseData(args.DeltaPosition.X, args.DeltaPosition.Y, args.DeltaPosition.ScrollWheelValue, (GHIElectronics.NETMF.USBClient.USBC_Mouse.Buttons)args.ButtonState);
+            // Translate from the host button presses (normal enum) to client button presses (flags enum).
+            GHIElectronics.NETMF.USBClient.USBC_Mouse.Buttons buttonBit = GHIElectronics.NETMF.USBClient.USBC_Mouse.Buttons.BUTTON_NONE;
+            if (args.ChangedButton == USBH_MouseButton.Left)
+                buttonBit = GHIElectronics.NETMF.USBClient.USBC_Mouse.Buttons.BUTTON_LEFT;
+            else if (args.ChangedButton == USBH_MouseButton.Right)
+                buttonBit = GHIElectronics.NETMF.USBClient.USBC_Mouse.Buttons.BUTTON_RIGHT;
+            else if (args.ChangedButton == USBH_MouseButton.Middle)
+                buttonBit = GHIElectronics.NETMF.USBClient.USBC_Mouse.Buttons.BUTTON_MIDDLE;
+            else if (args.ChangedButton == USBH_MouseButton.XButton1)
+                buttonBit = GHIElectronics.NETMF.USBClient.USBC_Mouse.Buttons.BUTTON_XBUTTON1;
+            else if (args.ChangedButton == USBH_MouseButton.XButton2)
+                buttonBit = GHIElectronics.NETMF.USBClient.USBC_Mouse.Buttons.BUTTON_XBUTTON2;
+            if (args.ButtonState == USBH_MouseButtonState.Pressed)
+                _MouseButtonState = _MouseButtonState | buttonBit;
+            else
+                _MouseButtonState = _MouseButtonState & ~buttonBit;
+
+            _Output.MouseData(args.DeltaPosition.X, args.DeltaPosition.Y, args.DeltaPosition.ScrollWheelValue, _MouseButtonState);
         }
 
         private void Mouse_Disconnected(USBH_Mouse sender, USBH_MouseEventArgs args)
