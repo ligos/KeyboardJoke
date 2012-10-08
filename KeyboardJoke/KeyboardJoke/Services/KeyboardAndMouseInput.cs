@@ -76,6 +76,16 @@ namespace MurrayGrant.KeyboardJoke.Services
                 _MouseButtonState = _MouseButtonState & ~buttonBit;
 
             _Output.MouseData(args.DeltaPosition.X, args.DeltaPosition.Y, args.DeltaPosition.ScrollWheelValue, _MouseButtonState);
+
+            // Handle inactivity and minimum time before start state.
+            this.SetInactivityTimeout();
+
+            if (_IsInactive)
+            {
+                // Transition to initial delay state by initialising the minimum variables.
+                SetMinimumCounters();
+                _IsInactive = false;
+            }
         }
 
         private void Mouse_Disconnected(USBH_Mouse sender, USBH_MouseEventArgs args)

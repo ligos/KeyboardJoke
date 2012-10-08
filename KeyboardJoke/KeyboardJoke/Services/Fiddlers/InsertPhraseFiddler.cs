@@ -49,6 +49,9 @@ namespace MurrayGrant.KeyboardJoke.Services.Fiddlers
                     var keyStroke = KeyboardTables.CharToKeyStroke(s[i]);
                     output.KeyPressWithModifier(keyStroke);
                 }
+                // Append a space.
+                if (s[s.Length - 1] != ' ')
+                    output.KeyPress(KeyboardKey.Space);
 
                 // Mark completion.
                 _IsComplete = true;
