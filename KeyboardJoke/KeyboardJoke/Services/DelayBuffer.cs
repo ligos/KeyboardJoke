@@ -16,7 +16,7 @@ namespace MurrayGrant.KeyboardJoke.Services
         public DelayBuffer(KeyboardAndMouseOutput keyboardOut, UserInterface ui)
         {
             _KeyboardOut = keyboardOut;
-            _Queue = new FixedSizeQueue(256);
+            _Queue = new FixedSizeQueue(512);
             _Timer = new Timer(TimerTick, null, Timeout.Infinite, Timeout.Infinite);
             _UI = ui;
         }

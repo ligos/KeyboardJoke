@@ -33,7 +33,18 @@ namespace MurrayGrant.KeyboardJoke
                 cfg.FiddleConfig.Definitions = new FiddleDefinition[4];
 
                 int i = 0;
-                var phrases = new string[] { "DO MY DISHES.", "Please don't do that... really, just don't.", "Brad, your keyboard hates you." };
+                var phrases = new string[] 
+                { 
+                    "DO MY DISHES.", 
+                    "Please don't do that. Really, just don't.", 
+                    "Brad, your keyboard hates you.", 
+                    "Did you really say that??!?", 
+                    "Brad, I can't let you do that.",
+                    "Must be infinite monkeys typing or something.",
+                    "Round 1. Fight!",
+                    "How much wood could a woodchuck chuck if a woodchuck could chuck wood?",
+                    "I know what you did last summer",
+                };
                 cfg.FiddleConfig.Definitions[i] = new FiddleDefinition();
                 cfg.FiddleConfig.Definitions[i].Implementation = new Services.Fiddlers.InsertPhraseFiddler(phrases);
                 cfg.FiddleConfig.Definitions[i].Probability = 0x00000000;          // Probabilities should scale from 0 to Int32.MaxValue-1 and be sorted accordingly.
