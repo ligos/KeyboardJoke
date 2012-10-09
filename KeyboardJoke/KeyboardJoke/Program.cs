@@ -67,6 +67,13 @@ namespace MurrayGrant.KeyboardJoke
                 i++;
 
                 cfg.FiddleConfig.Definitions[i] = new FiddleDefinition();
+                cfg.FiddleConfig.Definitions[i].Implementation = new Services.Fiddlers.TransposeKeysFiddler();
+                cfg.FiddleConfig.Definitions[i].Probability = 0x09000000;          // Probabilities should scale from 0 to Int32.MaxValue-1 and be sorted accordingly.
+                cfg.FiddleConfig.Definitions[i].MinDelay = new TimeSpan(TimeSpan.TicksPerMinute * 1);
+                cfg.FiddleConfig.Definitions[i].MaxDelay = new TimeSpan(TimeSpan.TicksPerMinute * 3);
+                i++;
+
+                cfg.FiddleConfig.Definitions[i] = new FiddleDefinition();
                 cfg.FiddleConfig.Definitions[i].Implementation = new Services.Fiddlers.DuplicateKeyFiddler();
                 cfg.FiddleConfig.Definitions[i].Probability = 0x2a000000;          // Probabilities should scale from 0 to Int32.MaxValue-1 and be sorted accordingly.
                 cfg.FiddleConfig.Definitions[i].MinDelay = new TimeSpan(TimeSpan.TicksPerMinute * 1);

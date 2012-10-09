@@ -49,6 +49,7 @@
     <Compile Include="Services\Fiddlers\DuplicateKeyFiddler.cs" />
     <Compile Include="Services\Fiddlers\IFiddler.cs" />
     <Compile Include="Services\Fiddlers\InsertPhraseFiddler.cs" />
+    <Compile Include="Services\Fiddlers\TransposeKeysFiddler.cs" />
     <Compile Include="Services\KeyboardAndMouseInput.cs" />
     <Compile Include="Services\KeyboardAndMouseOutput.cs" />
     <Compile Include="Services\Lcd.cs" />
