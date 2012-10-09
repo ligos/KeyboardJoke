@@ -13,7 +13,7 @@ namespace MurrayGrant.KeyboardJoke.Services.Fiddlers
         private const short _InitialDelay = 100;
         private const short _DelayIncrement = 50;
         private const short _MaxDelay = 2000;
-        private TimeSpan _KeyPressDeltaToAbort = new TimeSpan(TimeSpan.TicksPerMillisecond * 3000);
+        private TimeSpan _KeyPressDeltaToAbort = new TimeSpan(TimeSpan.TicksPerMillisecond * 4000);
         private TimeSpan _LastDetectedKeyPress;
 
         public void Initialise()
