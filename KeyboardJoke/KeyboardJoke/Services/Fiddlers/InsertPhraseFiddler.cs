@@ -24,6 +24,13 @@ namespace MurrayGrant.KeyboardJoke.Services.Fiddlers
 
         public void OnPublish(Random randomGenerator)
         {
+            // Because this fiddler is so blatent and obvious, only apply it if the unit has been running for at least 24 hours.
+            if (Microsoft.SPOT.Hardware.Utility.GetMachineTime().Ticks < TimeSpan.TicksPerHour * 24)
+            {
+                _IsComplete = true;
+                return;
+            }
+
             // Choose a phrase.
             _SelectedPhrase = randomGenerator.Next(_Phrases.Length - 1);
             _IsComplete = false;
