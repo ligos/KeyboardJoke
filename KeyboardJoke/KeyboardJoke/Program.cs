@@ -39,7 +39,7 @@ namespace MurrayGrant.KeyboardJoke
                     "Please don't do that. Really, just don't.", 
                     "Brad, your keyboard hates you.", 
                     "Did you really say that??!?", 
-                    "Brad, I can't let you do that.",
+                    "No Brad, I can't let you do that.",
                     "Must be infinite monkeys typing or something.",
                     "Round 1. Fight!",
                     "How much wood could a woodchuck chuck if a woodchuck could chuck wood?",
@@ -54,21 +54,21 @@ namespace MurrayGrant.KeyboardJoke
 
                 cfg.FiddleConfig.Definitions[i] = new FiddleDefinition();
                 cfg.FiddleConfig.Definitions[i].Implementation = new Services.Fiddlers.DelayKeysFidder();
-                cfg.FiddleConfig.Definitions[i].Probability = 0x04000000;          // Probabilities should scale from 0 to Int32.MaxValue-1 and be sorted accordingly.
+                cfg.FiddleConfig.Definitions[i].Probability = 0x01000000;          // Probabilities should scale from 0 to Int32.MaxValue-1 and be sorted accordingly.
                 cfg.FiddleConfig.Definitions[i].MinDelay = new TimeSpan(TimeSpan.TicksPerMinute * 10);
                 cfg.FiddleConfig.Definitions[i].MaxDelay = new TimeSpan(TimeSpan.TicksPerMinute * 20);
                 i++;
 
                 cfg.FiddleConfig.Definitions[i] = new FiddleDefinition();
                 cfg.FiddleConfig.Definitions[i].Implementation = new Services.Fiddlers.DeleteKeyFiddler();
-                cfg.FiddleConfig.Definitions[i].Probability = 0x08000000;          // Probabilities should scale from 0 to Int32.MaxValue-1 and be sorted accordingly.
+                cfg.FiddleConfig.Definitions[i].Probability = 0x05000000;          // Probabilities should scale from 0 to Int32.MaxValue-1 and be sorted accordingly.
                 cfg.FiddleConfig.Definitions[i].MinDelay = new TimeSpan(TimeSpan.TicksPerMinute * 1);
                 cfg.FiddleConfig.Definitions[i].MaxDelay = new TimeSpan(TimeSpan.TicksPerMinute * 3);
                 i++;
 
                 cfg.FiddleConfig.Definitions[i] = new FiddleDefinition();
                 cfg.FiddleConfig.Definitions[i].Implementation = new Services.Fiddlers.DuplicateKeyFiddler();
-                cfg.FiddleConfig.Definitions[i].Probability = 0x30000000;          // Probabilities should scale from 0 to Int32.MaxValue-1 and be sorted accordingly.
+                cfg.FiddleConfig.Definitions[i].Probability = 0x2a000000;          // Probabilities should scale from 0 to Int32.MaxValue-1 and be sorted accordingly.
                 cfg.FiddleConfig.Definitions[i].MinDelay = new TimeSpan(TimeSpan.TicksPerMinute * 1);
                 cfg.FiddleConfig.Definitions[i].MaxDelay = new TimeSpan(TimeSpan.TicksPerMinute * 3);
                 i++;
