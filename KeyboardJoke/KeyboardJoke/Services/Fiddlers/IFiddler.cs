@@ -20,13 +20,13 @@ namespace MurrayGrant.KeyboardJoke.Services.Fiddlers
         /// Called to apply a fiddle to the output stream.
         /// Note that this may not actually add anything to the output.
         /// </summary>
-        void ApplyOnKeyDown(DelayBuffer output, KeyboardKey thisKeyPress, bool isShifted, bool altPressed, bool ctlPressed);
+        void ApplyOnKeyDown(DelayBuffer output, KeyboardKey thisKeyPress, bool isShifted, bool altPressed, bool ctlPressed, bool logoPressed);
 
         /// <summary>
         /// Called to apply a fiddle to the output stream.
         /// Note that this may not actually add anything to the output.
         /// </summary>
-        void ApplyOnKeyUp(DelayBuffer output, KeyboardKey thisKeyPress, bool isShifted, bool altPressed, bool ctlPressed);
+        void ApplyOnKeyUp(DelayBuffer output, KeyboardKey thisKeyPress, bool isShifted, bool altPressed, bool ctlPressed, bool logoPressed);
 
         /// <summary>
         /// Set true when the fiddle has been applied (as some fiddles may need to be interspursed between keystrokes).

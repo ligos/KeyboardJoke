@@ -28,14 +28,14 @@ namespace MurrayGrant.KeyboardJoke.Services.Fiddlers
             _LastDetectedKeyPress = TimeSpan.MinValue;
         }
 
-        public void ApplyOnKeyDown(DelayBuffer output, KeyboardKey thisKeyPress, bool isShifted, bool altPressed, bool ctlPressed)
+        public void ApplyOnKeyDown(DelayBuffer output, KeyboardKey thisKeyPress, bool isShifted, bool altPressed, bool ctlPressed, bool logoPressed)
         {
             // Record the initial keypress time after publish.
             if (_LastDetectedKeyPress < TimeSpan.Zero)
                 _LastDetectedKeyPress = Utility.GetMachineTime();
         }
 
-        public void ApplyOnKeyUp(DelayBuffer output, KeyboardKey thisKeyPress, bool isShifted, bool altPressed, bool ctlPressed)
+        public void ApplyOnKeyUp(DelayBuffer output, KeyboardKey thisKeyPress, bool isShifted, bool altPressed, bool ctlPressed, bool logoPressed)
         {
             var now = Utility.GetMachineTime();
 

@@ -18,16 +18,16 @@ namespace MurrayGrant.KeyboardJoke.Services.Fiddlers
             _IsComplete = false;
         }
 
-        public void ApplyOnKeyDown(DelayBuffer output, KeyboardKey thisKeyPress, bool isShifted, bool altPressed, bool ctlPressed)
+        public void ApplyOnKeyDown(DelayBuffer output, KeyboardKey thisKeyPress, bool isShifted, bool altPressed, bool ctlPressed, bool logoPressed)
         {
             // No-op.
         }
 
-        public void ApplyOnKeyUp(DelayBuffer output, KeyboardKey thisKeyPress, bool isShifted, bool altPressed, bool ctlPressed)
+        public void ApplyOnKeyUp(DelayBuffer output, KeyboardKey thisKeyPress, bool isShifted, bool altPressed, bool ctlPressed, bool logoPressed)
         {
-            // If this keypress corresponds to a typable character, duplicate it.
+            // If this keypress corresponds to a typable character and no modifier keys are pressed: duplicate it.
             var c = KeyboardTables.KeyToChar(thisKeyPress, isShifted);
-            if (c != '\0')
+            if (c != '\0' && !altPressed && !ctlPressed && !logoPressed)
             {
                 var keyStroke = KeyboardTables.CharToKeyStroke(c);
                 output.KeyPressWithModifier(keyStroke);

@@ -147,6 +147,7 @@ namespace MurrayGrant.KeyboardJoke.Services
             var shiftPressed = (_Keyboard.GetKeyState(USBH_Key.LeftShift) == USBH_KeyState.Down) || (_Keyboard.GetKeyState(USBH_Key.RightShift) == USBH_KeyState.Down);
             var controlPressed = (_Keyboard.GetKeyState(USBH_Key.LeftCtrl) == USBH_KeyState.Down) || (_Keyboard.GetKeyState(USBH_Key.RightCtrl) == USBH_KeyState.Down);
             var altPressed = (_Keyboard.GetKeyState(USBH_Key.LeftAlt) == USBH_KeyState.Down) || (_Keyboard.GetKeyState(USBH_Key.RightAlt) == USBH_KeyState.Down);
+            var logoPressed = (_Keyboard.GetKeyState(USBH_Key.LeftGUI) == USBH_KeyState.Down) || (_Keyboard.GetKeyState(USBH_Key.RightGUI) == USBH_KeyState.Down);
             
             // Handle inactivity and minimum time before start state.
             this.SetInactivityTimeout();
@@ -161,7 +162,7 @@ namespace MurrayGrant.KeyboardJoke.Services
             if (_PublishedFiddle != null)
             {
                 // Call fiddler to adjust our output.
-                _PublishedFiddle.Implementation.ApplyOnKeyDown(_OutBuffer, key, shiftPressed, altPressed, controlPressed);
+                _PublishedFiddle.Implementation.ApplyOnKeyDown(_OutBuffer, key, shiftPressed, altPressed, controlPressed, logoPressed);
                 if (_PublishedFiddle.Implementation.IsComplete)
                 {
                     // Fiddle was applied, schedule the next one.
@@ -181,6 +182,7 @@ namespace MurrayGrant.KeyboardJoke.Services
             var shiftPressed = (_Keyboard.GetKeyState(USBH_Key.LeftShift) == USBH_KeyState.Down) || (_Keyboard.GetKeyState(USBH_Key.RightShift) == USBH_KeyState.Down);
             var controlPressed = (_Keyboard.GetKeyState(USBH_Key.LeftCtrl) == USBH_KeyState.Down) || (_Keyboard.GetKeyState(USBH_Key.RightCtrl) == USBH_KeyState.Down);
             var altPressed = (_Keyboard.GetKeyState(USBH_Key.LeftAlt) == USBH_KeyState.Down) || (_Keyboard.GetKeyState(USBH_Key.RightAlt) == USBH_KeyState.Down);
+            var logoPressed = (_Keyboard.GetKeyState(USBH_Key.LeftGUI) == USBH_KeyState.Down) || (_Keyboard.GetKeyState(USBH_Key.RightGUI) == USBH_KeyState.Down);
 
             // Handle inactivity and minimum time before start state.
             _MinimumKeystrokes--;
@@ -190,11 +192,11 @@ namespace MurrayGrant.KeyboardJoke.Services
                 // Transition to active state by selecting the next fiddle to publish.
                 SelectNextFiddle();
             }
-
+            
             if (_PublishedFiddle != null)
             {
                 // Call fiddler to adjust our output.
-                _PublishedFiddle.Implementation.ApplyOnKeyUp(_OutBuffer, key, shiftPressed, controlPressed, altPressed);
+                _PublishedFiddle.Implementation.ApplyOnKeyUp(_OutBuffer, key, shiftPressed, controlPressed, altPressed, logoPressed);
                 if (_PublishedFiddle.Implementation.IsComplete)
                 {
                     // Fiddle was applied, schedule the next one.

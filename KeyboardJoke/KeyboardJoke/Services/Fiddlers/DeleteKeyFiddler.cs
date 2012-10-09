@@ -18,16 +18,16 @@ namespace MurrayGrant.KeyboardJoke.Services.Fiddlers
             _IsComplete = false;
         }
 
-        public void ApplyOnKeyDown(DelayBuffer output, KeyboardKey thisKeyPress, bool isShifted, bool altPressed, bool ctlPressed)
+        public void ApplyOnKeyDown(DelayBuffer output, KeyboardKey thisKeyPress, bool isShifted, bool altPressed, bool ctlPressed, bool logoPressed)
         {
             // No-op.
         }
 
-        public void ApplyOnKeyUp(DelayBuffer output, KeyboardKey thisKeyPress, bool isShifted, bool altPressed, bool ctlPressed)
+        public void ApplyOnKeyUp(DelayBuffer output, KeyboardKey thisKeyPress, bool isShifted, bool altPressed, bool ctlPressed, bool logoPressed)
         {
-            // If this keypress corresponds to a typable character, queue a backspace to delete it.
+            // If this keypress corresponds to a typable character and no modifier keys are pressed: queue a backspace to delete it.
             var c = KeyboardTables.KeyToChar(thisKeyPress, isShifted);
-            if (c != '\0')
+            if (c != '\0' && !altPressed && !ctlPressed && !logoPressed)
             {
                 output.KeyPress(KeyboardKey.BackSpace);
                 _IsComplete = true;
