@@ -29,12 +29,12 @@ namespace MurrayGrant.KeyboardJoke.Services.Fiddlers
             _IsComplete = false;
         }
 
-        public void ApplyOnKeyDown(DelayBuffer output, KeyboardKey thisKeyPress, bool isShifted)
+        public void ApplyOnKeyDown(DelayBuffer output, KeyboardKey thisKeyPress, bool isShifted, bool altPressed, bool ctlPressed)
         {
             // No-op.                                        
         }
 
-        public void ApplyOnKeyUp(DelayBuffer output, KeyboardKey thisKeyPress, bool isShifted)
+        public void ApplyOnKeyUp(DelayBuffer output, KeyboardKey thisKeyPress, bool isShifted, bool altPressed, bool ctlPressed)
         {
             // Ensure the phrase is inserted at the end of a sentence or paragraph.
             bool atEndOfSentence = (thisKeyPress == KeyboardKey.Space) 

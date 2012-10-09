@@ -29,8 +29,6 @@ namespace MurrayGrant.KeyboardJoke.Services
         private Random _Rand;
         private readonly FiddleConfig _Config;
 
-        public bool ShiftPressed { get; private set; }
-
         public KeyboardAndMouseInput(UserInterface ui, KeyboardAndMouseOutput output, FiddleConfig config, bool inDebugMode)
         {
             _Ui = ui;
@@ -146,7 +144,9 @@ namespace MurrayGrant.KeyboardJoke.Services
             // Handle the key event ASAP.
             var key = (KeyboardKey)args.Key;
             _OutBuffer.KeyDown(key);
-            this.ShiftPressed = (_Keyboard.GetKeyState(USBH_Key.LeftShift) == USBH_KeyState.Down) || (_Keyboard.GetKeyState(USBH_Key.RightShift) == USBH_KeyState.Down);
+            var shiftPressed = (_Keyboard.GetKeyState(USBH_Key.LeftShift) == USBH_KeyState.Down) || (_Keyboard.GetKeyState(USBH_Key.RightShift) == USBH_KeyState.Down);
+            var controlPressed = (_Keyboard.GetKeyState(USBH_Key.LeftCtrl) == USBH_KeyState.Down) || (_Keyboard.GetKeyState(USBH_Key.RightCtrl) == USBH_KeyState.Down);
+            var altPressed = (_Keyboard.GetKeyState(USBH_Key.LeftAlt) == USBH_KeyState.Down) || (_Keyboard.GetKeyState(USBH_Key.RightAlt) == USBH_KeyState.Down);
             
             // Handle inactivity and minimum time before start state.
             this.SetInactivityTimeout();
@@ -161,7 +161,7 @@ namespace MurrayGrant.KeyboardJoke.Services
             if (_PublishedFiddle != null)
             {
                 // Call fiddler to adjust our output.
-                _PublishedFiddle.Implementation.ApplyOnKeyDown(_OutBuffer, key, this.ShiftPressed);
+                _PublishedFiddle.Implementation.ApplyOnKeyDown(_OutBuffer, key, shiftPressed, altPressed, controlPressed);
                 if (_PublishedFiddle.Implementation.IsComplete)
                 {
                     // Fiddle was applied, schedule the next one.
@@ -178,7 +178,9 @@ namespace MurrayGrant.KeyboardJoke.Services
             // Handle the key press ASAP.
             var key = (KeyboardKey)args.Key;
             _OutBuffer.KeyUp(key);
-            this.ShiftPressed = (_Keyboard.GetKeyState(USBH_Key.LeftShift) == USBH_KeyState.Down) || (_Keyboard.GetKeyState(USBH_Key.RightShift) == USBH_KeyState.Down);
+            var shiftPressed = (_Keyboard.GetKeyState(USBH_Key.LeftShift) == USBH_KeyState.Down) || (_Keyboard.GetKeyState(USBH_Key.RightShift) == USBH_KeyState.Down);
+            var controlPressed = (_Keyboard.GetKeyState(USBH_Key.LeftCtrl) == USBH_KeyState.Down) || (_Keyboard.GetKeyState(USBH_Key.RightCtrl) == USBH_KeyState.Down);
+            var altPressed = (_Keyboard.GetKeyState(USBH_Key.LeftAlt) == USBH_KeyState.Down) || (_Keyboard.GetKeyState(USBH_Key.RightAlt) == USBH_KeyState.Down);
 
             // Handle inactivity and minimum time before start state.
             _MinimumKeystrokes--;
@@ -192,7 +194,7 @@ namespace MurrayGrant.KeyboardJoke.Services
             if (_PublishedFiddle != null)
             {
                 // Call fiddler to adjust our output.
-                _PublishedFiddle.Implementation.ApplyOnKeyUp(_OutBuffer, key, this.ShiftPressed);
+                _PublishedFiddle.Implementation.ApplyOnKeyUp(_OutBuffer, key, shiftPressed, controlPressed, altPressed);
                 if (_PublishedFiddle.Implementation.IsComplete)
                 {
                     // Fiddle was applied, schedule the next one.
